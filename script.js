@@ -1,4 +1,4 @@
-const prompt = require("prompt-sync")({ sigint: true});
+//const prompt = require("prompt-sync")({ sigint: true});
 
 function getComputerChoice() {
     const val = ['rock', 'paper', 'scissors'];
@@ -7,48 +7,79 @@ function getComputerChoice() {
     return val[randChoice];
 }
 
-function playRound (playerSelection, computerSelection) {
-    
-    playerSelection = playerSelection.toLowerCase();
+function playRound (e) {
+    let computerSelection = getComputerChoice();
+    let playerSelection = this.getAttribute('value');
+
+    let user = document.querySelector(`p[name="User"] > span`);
+    let comp = document.querySelector(`p[name="Comp"] > span`);
+
+    let userScore = user.textContent;
+    let compScore = comp.textContent;
+
+    if (document.contains(document.querySelector('p[name="result"]'))) {
+        document.querySelector('p[name="result"]').remove();
+    }
+
     switch (playerSelection) {
         case 'rock':
-            if (computerSelection === 'scissors') return "You Won! Rock beats Scissors";
-            else if (computerSelection === 'paper') return "You Lose! Paper beats Rock";
-            else return "It's a Draw! Both are Rock";
+            if (computerSelection === 'scissors') {console.log("You Won! Rock beats Scissors"); userScore++;}
+            else if (computerSelection === 'paper') {console.log("You Lose! Paper beats Rock"); compScore++;}
+            else console.log("It's a Draw! Both are Rock");
             break;
         case 'paper':
-            if (computerSelection === 'scissors') return "You Lose! Scissors beats Paper";
-            else if (computerSelection === 'rock') return "You Won! Paper beats Rock";
-            else return "It's a Draw! Both are Paper";
+            if (computerSelection === 'scissors') {console.log("You Lose! Scissors beats Paper"); compScore++;}
+            else if (computerSelection === 'rock') {console.log("You Won! Paper beats Rock"); userScore++;}
+            else console.log("It's a Draw! Both are Paper");
             break;
         case 'scissors':
-            if (computerSelection === 'rock') return "You Lose! Rock beats Scissors";
-            else if (computerSelection === 'paper') return "You Won! Scissors beats Paper";
-            else return "It's a Draw! Both are Scissors";
-            break;
-        default: 
-            return "Please enter a valid option!";     
-    }
-}
-
-
-function game(numOfGame) {
-    let userWin = 0;
-    let compWin = 0;
-
-    for (let i = 0; i < numOfGame; i++) {
-        let userOption = (prompt("Enter a valid option (rock, paper, scissors): "));
-        let compOption = getComputerChoice();
-        let result = playRound (userOption, compOption);
-        
-        console.log (result);
-        if (result.includes('Won')) userWin++;
-        if (result.includes('Lose')) compWin++;
+            if (computerSelection === 'rock') {console.log("You Lose! Rock beats Scissors"); compScore++; }
+            else if (computerSelection === 'paper') {console.log("You Won! Scissors beats Paper"); userScore++; }
+            else console.log("It's a Draw! Both are Scissors"); 
     }
 
-    console.log(`${userWin} ${compWin}`)
+    user.textContent = userScore;
+    comp.textContent = compScore;
 
-    userWin > compWin ? console.log("The User Won!") : console.log("The User Lost!");
+    if (userScore >= 5 || compScore >= 5) {
+        const p = document.createElement('p');
+        const body = document.querySelector('body');
+        const footer = document.querySelector('footer');
+
+        p.setAttribute('name', 'result');
+
+        userScore > compScore ? p.textContent = "Hurahh, You Won!" : p.textContent = "Oops, You Lost!"
+
+        p.setAttribute('style', `padding: 20px; background-color: #2ED1B3; color: #094e41; text-align: center; font-weight: bold; 
+            font-size: 30px; width: 50%; margin: 0px auto; border-radius: 5px; max-width: 500px`)
+        body.insertBefore(p, footer);
+
+        user.textContent = 0;
+        comp.textContent = 0;
+        console.clear();
+    };
 }
 
-game(6);
+function resetGame(e) {
+    let user = document.querySelector(`p[name="User"] > span`);
+    let comp = document.querySelector(`p[name="Comp"] > span`);
+
+    user.textContent = 0;
+    comp.textContent = 0;
+    
+    if (document.contains(document.querySelector('p[name="result"]'))) {
+        document.querySelector('p[name="result"]').remove();
+    }
+
+    console.clear();
+
+}
+
+let userScore = 0, compScore = 0;
+
+const button = document.querySelectorAll('#play > button');
+const reset = document.querySelector('#reset > button');
+
+button.forEach(btn => btn.addEventListener('click', playRound));
+reset.addEventListener('click', resetGame);
+
